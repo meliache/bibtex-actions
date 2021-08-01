@@ -229,18 +229,20 @@ strings by style."
 
 ;;; Embark target finder
 
-(defun bibtex-actions-get-key-org-cite ()
+(defun bibtex-actions-get-keys-org-cite ()
   "Return key at point for org-cite citation-reference."
   (when-let (((eq major-mode 'org-mode))
              (elt (org-element-context)))
     (pcase (org-element-type elt)
       ('citation-reference
-       (org-element-property :key elt)))))
+       (org-element-property :key elt))
+      ('citation
+       (org-cite-get-references elt t)))))
 
-(defun oc-bibtex-actions-citation-key-finder ()
+(defun oc-bibtex-actions-citation-finder ()
   "Return org-cite citation-reference (key) at point for `embark'."
-  (when-let ((key (bibtex-actions-get-key-org-cite)))
-    (cons 'oc-citation-key key)))
+  (when-let ((keys (bibtex-actions-get-keys-org-cite)))
+    (cons 'oc-citation (bibtex-actions--stringify-keys keys))))
 
 ;;; Keymap
 
@@ -259,9 +261,9 @@ strings by style."
 
 ;; Embark configuration for org-cite
 
-(add-to-list 'embark-target-finders 'oc-bibtex-actions-citation-key-finder)
+(add-to-list 'embark-target-finders 'oc-bibtex-actions-citation-finder)
 (add-to-list 'embark-keymap-alist '(bibtex . bibtex-actions-map))
-(add-to-list 'embark-keymap-alist '(oc-citation-key . oc-bibtex-actions-map))
+(add-to-list 'embark-keymap-alist '(oc-citation . oc-bibtex-actions-map))
 
 ;; Load this last.
 

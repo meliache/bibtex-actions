@@ -521,7 +521,8 @@ With prefix, rebuild the cache before offering candidates."
 (defun bibtex-actions-run-default-action (keys)
   "Run the default action `bibtex-actions-default-action' on KEYS."
   (let ((key-list
-         (if (stringp keys) (list keys) keys)))
+         ;; Make sure we split the crm-string we provide 'embark'.
+         (if (stringp keys) (split-string keys " & ") keys)))
     (funcall bibtex-actions-default-action key-list)))
 
 ;;;###autoload
